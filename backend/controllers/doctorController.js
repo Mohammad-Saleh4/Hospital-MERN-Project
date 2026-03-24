@@ -5,6 +5,8 @@ import { UploadStream } from "cloudinary";
 import jwt from "jsonwebtoken";
 import { normalize } from "path";
 import { resolveTxt } from "dns";
+import { cp } from "fs";
+import { AuthStatus } from "@clerk/clerk-sdk-node";
 
 //Helper functions
 //this function convert time to nb of minutes since midnight, to help sort the schedule slots and remove duplicates
@@ -354,9 +356,68 @@ return res.json({success: true,message:"Doctor deleted successfully"});
 }
 }
 
+// to toggle availability
+
+export async function toggleAvailability(req, res) {
+
+try{
+
+const { id } = req.params;
+  
+    if (!req.doctor || String(req.doctor._id || req.doctor.id) !== String(id)) {
+      return res.status(403).json({ success: false, message: "Not authorized to update this doctor's availability" });
+    }
+
+const doc=await Doctor.findById(id);
+if(!doc)return res.status(404).json({success: false,message:"Doctor not found"});
+
+if(typeof doc.availability==="boolean")doc.availability=!doc.availability;
+else doc.availability=doc.availability==="Available" ? "Unavailable" : "Available";
+await doc.save();
+const out=normalizeDocForClient(doc.toObject());
+delete out.password;
+return res.json({success: true,data: out});
+
+}catch (err) { 
+
+ console.error("toggleAvailability error:", err);
+  return res.status(500).json({ success: false, message: "Server error" });
 
 
 
+ }
+
+}
+
+//to login the doctor  
+export async function doctorLogin(req, res) {
+
+try{
+const { email, password } = req.body || {};
+if(!email || !password)
+
+return res.status(400).json({success: false,message:"Email and password are required"});
+
+const doc=await Doctor.findOne({email: email.toLowerCase()}).select("+password");
+if(!doc)return res.status(404).json({success: false,message:"invalid creds"});
+if(doc.password!==password)
+return res.status(401).json({success: false,message:"invalid creds"});
+
+const secret=process.env.JWT_SECRET;
+if(!secret) return res.status(500).json({success: false,message:"Server configuration error"});
+
+const token=jwt.sign({id:doc._id.toString(),email:doc.email,role:"doctor"},secret,{expiresIn:"7d"});
+
+const out=doc.toObject();
+delete out.password;
+return res.json({success:true,token,data: out});
 
 
+}catch
+(err){
 
+console.error("login doctor error:", err);
+  return res.status(500).json({ success: false, message: "Server error" });
+
+
+}}
