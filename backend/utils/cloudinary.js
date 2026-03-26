@@ -1,6 +1,6 @@
 import {v2 as cloudinary} from 'cloudinary';
 import fs from 'fs';
-import { constrainedMemory } from 'process';
+//import { constrainedMemory } from 'process';
 
 
 

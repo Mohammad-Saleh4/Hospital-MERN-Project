@@ -53,7 +53,7 @@ cb(new Error("only images files are allowed"),false);
 //multer config
 const upload=multer({
     storage,
-    fileFilter,
+    filefilter,
     limits:{
 
         fileSize:5 * 1024 *1024 ,//5mb

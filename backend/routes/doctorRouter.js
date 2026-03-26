@@ -1,8 +1,8 @@
 import express from 'express';
 import multer from 'multer';
-import { createDoctor, deleteDoctor, doctorLogin, getDoctorById, getDoctors, toggleAvailability, updateDoctor } from '../controllers/doctorController';
+import { createDoctor, deleteDoctor, doctorLogin, getDoctorById, getDoctors, toggleAvailability, updateDoctor } from '../controllers/doctorController.js';
 
-import doctorAuth from '../middlewares/doctorAuth';
+import doctorAuth from '../middlewares/doctorAuth.js';
 
 const upload=multer({
 dest:"/tmp"
