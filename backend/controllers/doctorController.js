@@ -1,7 +1,7 @@
 import e from "express";
 import Doctor from "../models/Doctor.js";
 import { uploadToCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
-import { UploadStream } from "cloudinary";
+//import { UploadStream } from "cloudinary";
 import jwt from "jsonwebtoken";
 import { normalize } from "path";
 import { resolveTxt } from "dns";
